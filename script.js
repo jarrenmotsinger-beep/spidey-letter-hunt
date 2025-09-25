@@ -203,4 +203,82 @@ function renderLettersLevel1(target) {
       } else {
         playSoundWrong();
         btn.classList.add("wrong");
-        se
+        setFeedback("😈 Venom got you!", false);
+        updateScore(-1);
+      }
+    });
+
+    lettersEl.appendChild(btn);
+  });
+}
+
+function renderLettersWord(target) {
+  lettersEl.innerHTML = "";
+  const needed = target.split("");
+  let index = 0;
+
+  // Pool: target letters + a few randoms
+  const unique = [...new Set(needed)];
+  const pool = [...unique];
+  while (pool.length < needed.length + 3) {
+    pool.push(alphabet[Math.floor(Math.random() * alphabet.length)]);
+  }
+  pool.sort(() => Math.random() - 0.5);
+
+  pool.forEach(letter => {
+    const btn = document.createElement("button");
+    btn.className = "letter";
+    btn.type = "button";
+    btn.textContent = letter;
+
+    btn.addEventListener("click", () => {
+      if (letter === needed[index]) {
+        playSoundCorrect();
+        btn.classList.add("correct");
+        index++;
+        setFeedback(`🕸️ Good! Keep going... (${index}/${needed.length})`, true);
+        if (index === needed.length) {
+          setFeedback(`✅ You spelled ${target}!`, true);
+          updateScore(+3);
+          roundWins++;
+          checkLevelUp();
+          disableAll();
+        }
+      } else {
+        playSoundWrong();
+        btn.classList.add("wrong");
+        setFeedback("😈 Venom tricked you!", false);
+        updateScore(-1);
+      }
+    });
+
+    lettersEl.appendChild(btn);
+  });
+}
+
+function newRound() {
+  feedbackEl.textContent = "";
+  target = getTarget();
+  targetEl.textContent = target;
+  if (level === 1) {
+    renderLettersLevel1(target);
+  } else {
+    renderLettersWord(target);
+  }
+}
+
+nextBtn.addEventListener("click", newRound);
+
+// Allow keyboard shortcuts (optional)
+document.addEventListener("keydown", (e) => {
+  const k = e.key?.toUpperCase();
+  if (alphabet.includes(k)) {
+    const btn = Array.from(lettersEl.children).find(b => b.textContent === k);
+    if (btn) btn.click();
+  } else if (e.key === "Enter") {
+    newRound();
+  }
+});
+
+// Start the first round
+newRound();
