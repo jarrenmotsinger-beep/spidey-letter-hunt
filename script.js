@@ -55,8 +55,8 @@ function setFeedback(msg, win){
 }
 function updateScore(d){ score+=d; scoreEl.textContent="Score: "+score; }
 function disableAll(){ Array.from(lettersEl.children).forEach(b=>b.disabled=true); }
-function showSpidey(){ spideyImg.style.display="block"; spideyImg.classList.add("flash"); venomImg.style.display="none"; }
-function showVenom(){ venomImg.style.display="block"; venomImg.classList.add("flash"); spideyImg.style.display="none"; }
+function showSpidey(){ spideyImg.style.display="block"; venomImg.style.display="none"; spideyImg.classList.add("flash"); }
+function showVenom(){ venomImg.style.display="block"; spideyImg.style.display="none"; venomImg.classList.add("flash"); }
 
 // ===== Level Logic =====
 function checkLevelUp(){
