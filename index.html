@@ -3,41 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Spider-Man vs Venom — Word Battle</title>
-  <link rel="stylesheet" href="style.css?v=5" />
+  <title>Spider-Man Learning Hub</title>
+  <link rel="stylesheet" href="style.css?v=6" />
 </head>
 <body>
   <header>
-    <h1>🕷️ <span style="color:#e30613;">Spider-Man</span> vs <span style="color:#111;">Venom</span> — Word Battle</h1>
-    <p id="instructions">
-      Help Spider-Man defeat Venom by completing the challenges!
-    </p>
+    <h1>🕷️ Spider-Man Learning Hub</h1>
+    <p>Choose your mission to help Spider-Man stop Venom!</p>
   </header>
 
-  <main>
-    <section id="hud">
-      <div id="level-box">Level: <span id="level">1</span></div>
-      <div id="target-box" aria-live="polite">
-        Target: <span id="target" class="big"></span>
-      </div>
-      <div id="score" aria-live="polite">Score: 0</div>
-    </section>
-
-    <section id="letters" aria-label="Choices"></section>
-    <section id="feedback" aria-live="polite"></section>
-
-    <!-- Character images -->
-    <div id="characters">
-      <img id="spidey-img" src="https://i.ibb.co/2jK8k1B/spiderman.png" alt="Spider-Man" />
-      <img id="venom-img" src="https://i.ibb.co/4PX8qrb/venom.png" alt="Venom" />
-    </div>
+  <main id="hub">
+    <button class="game-btn" onclick="startGame('letters')">🔤 Letter Hunt</button>
+    <button class="game-btn" onclick="startGame('spelling')">✏️ Spelling Builder</button>
+    <button class="game-btn" onclick="startGame('math')">🔢 Math Battle</button>
+    <button class="game-btn" onclick="startGame('memory')">🧩 Memory Puzzle</button>
+    <button class="game-btn" onclick="startGame('boss')">🎭 Boss Battle</button>
   </main>
 
-  <footer>
-    <button id="enable-audio" type="button">Enable Sound 🔊</button>
-    <button id="new-round" type="button">Next ▶</button>
-  </footer>
+  <section id="game-screen" style="display:none;">
+    <div id="game-area"></div>
+    <button onclick="returnToHub()">⬅️ Back to Hub</button>
+  </section>
 
-  <script src="script.js?v=5"></script>
+  <script src="script.js?v=6"></script>
 </body>
 </html>
