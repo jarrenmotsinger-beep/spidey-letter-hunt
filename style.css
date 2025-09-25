@@ -1,127 +1,40 @@
-:root {
-  --spidey-red: #e30613;
-  --spidey-blue: #0d47a1;
-  --venom-black: #111;
-  --ink: #fff;
+body {
+  margin: 0;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  background: linear-gradient(to bottom, #0d47a1, #000);
+  color: white;
+  text-align: center;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+header {
+  padding: 20px;
+  background: #e30613;
+  color: white;
+  text-shadow: 2px 2px black;
+}
 
-body {
-  font-family: "Comic Sans MS", cursive, sans-serif;
-  color: var(--ink);
-  background: url("https://i.ibb.co/0YF2tJ0/city-skyline.png") no-repeat center bottom,
-              linear-gradient(to top, #000 10%, var(--spidey-blue) 80%);
-  background-size: cover;
+#hub {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  padding: 16px;
-}
-
-header h1 {
-  margin: 8px 0;
-  text-shadow: 2px 2px black;
-  text-align: center;
-  font-size: 1.8rem;
-}
-
-#instructions {
-  margin-bottom: 16px;
-  text-align: center;
-  background: rgba(0,0,0,0.5);
-  padding: 6px 10px;
-  border-radius: 6px;
-}
-
-#hud {
-  display: flex;
   gap: 16px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-#level-box, #target-box, #score {
-  background: rgba(0,0,0,0.6);
-  border: 2px solid var(--spidey-red);
-  padding: 10px 14px;
-  border-radius: 10px;
-}
-.big {
-  font-size: 32px;
-  font-weight: bold;
-  margin-left: 8px;
+  margin: 30px auto;
+  max-width: 400px;
 }
 
-#letters {
-  margin: 18px auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px,1fr));
-  gap: 12px;
-  width: min(420px, 100%);
-}
-
-.letter {
-  font-size: 28px;
-  font-weight: bold;
+.game-btn {
   padding: 16px;
-  border-radius: 12px;
+  font-size: 1.4rem;
   border: none;
-  background: var(--spidey-red);
-  color: white;
+  border-radius: 12px;
   cursor: pointer;
-  box-shadow: 0 4px 0 #000;
+  background: #e30613;
+  color: white;
+  box-shadow: 0 4px #000;
   transition: transform .1s, background .2s;
 }
-.letter:hover { background: #ff1744; }
-.correct { background: green !important; }
-.wrong { background: darkred !important; }
+.game-btn:hover { background: #ff1744; }
+.game-btn:active { transform: translateY(2px); }
 
-#feedback {
-  font-size: 20px;
-  min-height: 28px;
-  margin-top: 10px;
-  text-align: center;
-}
-.win { color: #7cffb2; }
-.lose { color: #ff9aa2; }
-
-footer {
-  margin-top: auto;
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  background: rgba(0,0,0,0.6);
-  padding: 10px;
-  border-radius: 8px;
-}
-footer button {
-  padding: 12px 18px;
-  border-radius: 10px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-}
-#enable-audio { background: gray; color: white; }
-#new-round { background: var(--spidey-red); color: white; }
-
-#characters {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin-top: 20px;
-}
-#characters img {
-  max-height: 200px;
-  display: none;
-  border: 3px solid white;
-  border-radius: 10px;
-  background: rgba(0,0,0,0.7);
-  padding: 6px;
-}
-.flash { animation: pop .3s ease; }
-@keyframes pop {
-  0% { transform: scale(.8); }
-  100% { transform: scale(1); }
+#game-screen {
+  padding: 20px;
 }
