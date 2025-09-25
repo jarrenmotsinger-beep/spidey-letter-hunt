@@ -1,4 +1,4 @@
-// ====== Elements ======
+// ===== Elements =====
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const targetEl = document.getElementById("target");
 const lettersEl = document.getElementById("letters");
@@ -7,254 +7,124 @@ const scoreEl = document.getElementById("score");
 const levelEl = document.getElementById("level");
 const nextBtn = document.getElementById("new-round");
 const enableBtn = document.getElementById("enable-audio");
+const spideyImg = document.getElementById("spidey-img");
+const venomImg = document.getElementById("venom-img");
 
-// ====== Game State ======
-let score = 0;
-let target = null;
-let level = 1;      // 1 = letters, 2 = easy words, 3 = hero words
-let roundWins = 0;
+// ===== State =====
+let score = 0, target = "", level = 1, roundWins = 0;
 
 // Word lists
-const easyWords = ["CAT", "DOG", "BAT", "WEB", "SUN", "CAR"];
-const heroWords = ["WEB", "HERO", "VENOM", "SPIDER", "MASK", "POWER"];
+const easyWords = ["CAT","DOG","BAT","WEB","SUN"];
+const heroWords = ["WEB","HERO","VENOM","SPIDER","MASK","POWER"];
+const missingWords = ["CAR","MOON","TREE","BOOK","GAME"];
 
-// ====== Web Audio (no external files) ======
-let audioCtx = null;
-let masterGain = null;
-let noiseBuffer = null;
+// ===== Web Audio =====
+let audioCtx, masterGain, noiseBuffer;
+function initAudio(){
+  const Ctx = window.AudioContext||window.webkitAudioContext;
+  audioCtx = new Ctx();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.value=0.6;
+  masterGain.connect(audioCtx.destination);
+  noiseBuffer=audioCtx.createBuffer(1,audioCtx.sampleRate,audioCtx.sampleRate);
+  const data=noiseBuffer.getChannelData(0);
+  for(let i=0;i<data.length;i++) data[i]=Math.random()*2-1;
+}
+enableBtn.onclick=()=>{initAudio();enableBtn.style.display="none";};
+function ensureAudio(){ if(!audioCtx) initAudio(); }
 
-function initAudio() {
-  if (!audioCtx) {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    audioCtx = new Ctx();
-    masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0.6;
-    masterGain.connect(audioCtx.destination);
-
-    // Create a 1-second white noise buffer
-    noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate, audioCtx.sampleRate);
-    const data = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-  } else if (audioCtx.state !== "running") {
-    audioCtx.resume();
-  }
+// Sounds
+function playThwip(){
+  ensureAudio(); const t=audioCtx.currentTime;
+  const src=audioCtx.createBufferSource(); src.buffer=noiseBuffer;
+  const hp=audioCtx.createBiquadFilter(); hp.type="highpass"; hp.frequency.setValueAtTime(600,t);
+  const g=audioCtx.createGain(); g.gain.setValueAtTime(.8,t); g.gain.exponentialRampToValueAtTime(.001,t+.3);
+  src.connect(hp).connect(g).connect(masterGain); src.start(t); src.stop(t+.3);
+}
+function playGrowl(){
+  ensureAudio(); const t=audioCtx.currentTime;
+  const osc=audioCtx.createOscillator(); osc.type="sawtooth"; osc.frequency.setValueAtTime(100,t);
+  const g=audioCtx.createGain(); g.gain.setValueAtTime(.8,t); g.gain.exponentialRampToValueAtTime(.001,t+.5);
+  osc.connect(g).connect(masterGain); osc.start(t); osc.stop(t+.5);
 }
 
-enableBtn.addEventListener("click", () => {
-  initAudio();
-  enableBtn.style.display = "none";
-});
+// ===== Helpers =====
+function setFeedback(msg, win){
+  feedbackEl.textContent=msg;
+  feedbackEl.className=win?"win":"lose";
+}
+function updateScore(d){ score+=d; scoreEl.textContent="Score: "+score; }
+function disableAll(){ Array.from(lettersEl.children).forEach(b=>b.disabled=true); }
+function showSpidey(){ spideyImg.style.display="block"; spideyImg.classList.add("flash"); venomImg.style.display="none"; }
+function showVenom(){ venomImg.style.display="block"; venomImg.classList.add("flash"); spideyImg.style.display="none"; }
 
-function ensureAudio() {
-  if (!audioCtx || audioCtx.state !== "running") {
-    initAudio();
-    if (audioCtx && audioCtx.state === "running") {
-      enableBtn.style.display = "none";
-    }
-  }
+// ===== Level Logic =====
+function checkLevelUp(){
+  if(roundWins>=3 && level<4){ level++; roundWins=0; }
+  levelEl.textContent=level;
+}
+function getTarget(){
+  if(level===1) return alphabet[Math.floor(Math.random()*alphabet.length)];
+  if(level===2) return easyWords[Math.floor(Math.random()*easyWords.length)];
+  if(level===3) return missingWords[Math.floor(Math.random()*missingWords.length)];
+  return heroWords[Math.floor(Math.random()*heroWords.length)];
 }
 
-function playThwip() {
-  if (!audioCtx) return;
-  const t = audioCtx.currentTime;
-  const src = audioCtx.createBufferSource();
-  src.buffer = noiseBuffer;
-
-  const hp = audioCtx.createBiquadFilter();
-  hp.type = "highpass";
-  hp.frequency.setValueAtTime(600, t);
-  hp.frequency.exponentialRampToValueAtTime(4000, t + 0.15);
-
-  const g = audioCtx.createGain();
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.linearRampToValueAtTime(1.0, t + 0.02);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
-
-  src.connect(hp).connect(g).connect(masterGain);
-  src.start(t);
-  src.stop(t + 0.3);
-}
-
-function playGrowl() {
-  if (!audioCtx) return;
-  const t = audioCtx.currentTime;
-
-  // Low oscillator growl
-  const osc = audioCtx.createOscillator();
-  osc.type = "sawtooth";
-  osc.frequency.setValueAtTime(90, t);
-  osc.frequency.exponentialRampToValueAtTime(60, t + 0.4);
-
-  const g1 = audioCtx.createGain();
-  g1.gain.setValueAtTime(0.0001, t);
-  g1.gain.linearRampToValueAtTime(0.8, t + 0.05);
-  g1.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
-
-  osc.connect(g1).connect(masterGain);
-  osc.start(t);
-  osc.stop(t + 0.65);
-
-  // Add noise layer
-  const noise = audioCtx.createBufferSource();
-  noise.buffer = noiseBuffer;
-
-  const lp = audioCtx.createBiquadFilter();
-  lp.type = "lowpass";
-  lp.frequency.setValueAtTime(500, t);
-
-  const g2 = audioCtx.createGain();
-  g2.gain.setValueAtTime(0.0001, t);
-  g2.gain.linearRampToValueAtTime(0.4, t + 0.05);
-  g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
-
-  noise.connect(lp).connect(g2).connect(masterGain);
-  noise.start(t);
-  noise.stop(t + 0.65);
-}
-
-function playSoundCorrect() { ensureAudio(); playThwip(); }
-function playSoundWrong()   { ensureAudio(); playGrowl(); }
-
-// ====== UI Helpers ======
-function setFeedback(msg, isWin) {
-  feedbackEl.textContent = msg;
-  feedbackEl.className = isWin ? "win" : "lose";
-  lettersEl.classList.remove("flash-win", "flash-lose");
-  void lettersEl.offsetWidth; // restart CSS animation
-  lettersEl.classList.add(isWin ? "flash-win" : "flash-lose");
-}
-
-function updateScore(delta) {
-  score += delta;
-  scoreEl.textContent = `Score: ${score}`;
-}
-
-function disableAll() {
-  Array.from(lettersEl.children).forEach(b => b.disabled = true);
-}
-
-// ====== Level Logic ======
-function checkLevelUp() {
-  if (roundWins >= 3 && level === 1) {
-    level = 2;
-    roundWins = 0;
-    setFeedback("🚀 Level Up! Now spell small words!", true);
-  } else if (roundWins >= 3 && level === 2) {
-    level = 3;
-    roundWins = 0;
-    setFeedback("🔥 Hero Level! Spell Spider-Man words!", true);
-  }
-  levelEl.textContent = level;
-}
-
-function getTarget() {
-  if (level === 1) {
-    return alphabet[Math.floor(Math.random() * alphabet.length)];
-  } else if (level === 2) {
-    return easyWords[Math.floor(Math.random() * easyWords.length)];
-  } else {
-    return heroWords[Math.floor(Math.random() * heroWords.length)];
-  }
-}
-
-// ====== Rendering ======
-function renderLettersLevel1(target) {
-  lettersEl.innerHTML = "";
-  let choices = new Set([target]);
-  while (choices.size < 6) {
-    choices.add(alphabet[Math.floor(Math.random() * alphabet.length)]);
-  }
-  [...choices].sort(() => Math.random() - 0.5).forEach(letter => {
-    const btn = document.createElement("button");
-    btn.className = "letter";
-    btn.type = "button";
-    btn.textContent = letter;
-
-    btn.addEventListener("click", () => {
-      if (letter === target) {
-        playSoundCorrect();
-        btn.classList.add("correct");
-        setFeedback("🕸️ Thwip! Correct!", true);
-        updateScore(+1);
-        roundWins++;
-        checkLevelUp();
-        disableAll();
-      } else {
-        playSoundWrong();
-        btn.classList.add("wrong");
-        setFeedback("😈 Venom got you!", false);
-        updateScore(-1);
-      }
-    });
-
+// ===== Renders =====
+function renderLettersLevel1(target){
+  lettersEl.innerHTML="";
+  const pool=[target]; while(pool.length<6){const r=alphabet[Math.floor(Math.random()*alphabet.length)];if(!pool.includes(r)) pool.push(r);}
+  pool.sort(()=>Math.random()-.5).forEach(l=>{
+    const btn=document.createElement("button"); btn.className="letter"; btn.textContent=l;
+    btn.onclick=()=>{
+      if(l===target){ playThwip(); setFeedback("🕸️ Thwip! Correct!",true); updateScore(1); showSpidey(); roundWins++; checkLevelUp(); disableAll();}
+      else{ playGrowl(); setFeedback("😈 Venom got you!",false); updateScore(-1); showVenom();}
+    };
     lettersEl.appendChild(btn);
   });
 }
 
-function renderLettersWord(target) {
-  lettersEl.innerHTML = "";
-  const needed = target.split("");
-  let index = 0;
-
-  const pool = [...new Set(needed)];
-  while (pool.length < needed.length + 3) {
-    pool.push(alphabet[Math.floor(Math.random() * alphabet.length)]);
-  }
-  pool.sort(() => Math.random() - 0.5);
-
-  pool.forEach(letter => {
-    const btn = document.createElement("button");
-    btn.className = "letter";
-    btn.type = "button";
-    btn.textContent = letter;
-
-    btn.addEventListener("click", () => {
-      if (letter === needed[index]) {
-        playSoundCorrect();
-        btn.classList.add("correct");
-        index++;
-        setFeedback(`🕸️ Good! Keep going... (${index}/${needed.length})`, true);
-        if (index === needed.length) {
-          setFeedback(`✅ You spelled ${target}!`, true);
-          updateScore(+3);
-          roundWins++;
-          checkLevelUp();
-          disableAll();
-        }
-      } else {
-        playSoundWrong();
-        btn.classList.add("wrong");
-        setFeedback("😈 Venom tricked you!", false);
-        updateScore(-1);
-      }
-    });
-
+function renderLettersWord(word){
+  lettersEl.innerHTML=""; let idx=0; const pool=[...new Set(word.split(""))];
+  while(pool.length<word.length+3){pool.push(alphabet[Math.floor(Math.random()*alphabet.length)]);}
+  pool.sort(()=>Math.random()-.5).forEach(l=>{
+    const btn=document.createElement("button"); btn.className="letter"; btn.textContent=l;
+    btn.onclick=()=>{
+      if(l===word[idx]){ playThwip(); btn.classList.add("correct"); idx++; showSpidey(); setFeedback(`Keep going (${idx}/${word.length})`,true);
+        if(idx===word.length){ setFeedback("✅ You spelled "+word,true); updateScore(3); roundWins++; checkLevelUp(); disableAll();}
+      } else { playGrowl(); btn.classList.add("wrong"); showVenom(); setFeedback("😈 Wrong letter!",false); updateScore(-1); }
+    };
     lettersEl.appendChild(btn);
   });
 }
 
-function newRound() {
-  feedbackEl.textContent = "";
-  target = getTarget();
-  targetEl.textContent = target;
-  if (level === 1) {
-    renderLettersLevel1(target);
-  } else {
-    renderLettersWord(target);
-  }
+function renderMissingLetter(word){
+  lettersEl.innerHTML="";
+  const missingIdx=Math.floor(Math.random()*word.length);
+  const display=word.split(""); display[missingIdx]="_";
+  targetEl.textContent=display.join("");
+  const correctLetter=word[missingIdx];
+  const pool=[correctLetter]; while(pool.length<5){const r=alphabet[Math.floor(Math.random()*alphabet.length)]; if(!pool.includes(r)) pool.push(r);}
+  pool.sort(()=>Math.random()-.5).forEach(l=>{
+    const btn=document.createElement("button"); btn.className="letter"; btn.textContent=l;
+    btn.onclick=()=>{
+      if(l===correctLetter){ playThwip(); setFeedback(`🕸️ Correct! It was ${l}`,true); updateScore(2); showSpidey(); roundWins++; checkLevelUp(); disableAll();}
+      else{ playGrowl(); setFeedback("😈 Nope, try again!",false); showVenom(); updateScore(-1);}
+    };
+    lettersEl.appendChild(btn);
+  });
 }
 
-nextBtn.addEventListener("click", newRound);
+// ===== New Round =====
+function newRound(){
+  feedbackEl.textContent=""; spideyImg.style.display="none"; venomImg.style.display="none";
+  target=getTarget();
+  if(level===1){ targetEl.textContent=target; renderLettersLevel1(target);}
+  else if(level===2){ targetEl.textContent=target; renderLettersWord(target);}
+  else if(level===3){ renderMissingLetter(target);}
+  else{ targetEl.textContent=target; renderLettersWord(target);}
+}
+nextBtn.onclick=newRound;
 
-document.addEventListener("keydown", (e) => {
-  const k = e.key?.toUpperCase();
-  if (alphabet.includes(k)) {
-    const btn = Array.from(lettersEl.children).find(b => b.textContent === k);
-    if (btn) btn.click();
-  } else if (e.key === "Enter") {
-    newRound();
-  }
-});
-
-// ====== Start ======
+// Start
 newRound();
