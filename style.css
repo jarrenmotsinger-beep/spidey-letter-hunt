@@ -98,8 +98,12 @@ footer button {
   margin-top: 20px;
 }
 #characters img {
-  max-height: 150px;
+  max-height: 180px;
   display: none;
+  border: 3px solid white;
+  border-radius: 10px;
+  background: black;
+  padding: 4px;
 }
 .flash { animation: pop .3s ease; }
 @keyframes pop {
