@@ -26,19 +26,12 @@
     <section id="feedback" aria-live="polite"></section>
   </main>
 
-  <footer>
+  <footer style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+    <button id="enable-audio" type="button" title="Enable sound effects">Enable Sound 🔊</button>
     <button id="new-round" type="button" title="Next letter or word">Next ▶</button>
   </footer>
 
-  <!-- Spider-Man and Venom sound effects (test MP3s) -->
-  <audio id="thwip-sound" 
-         src="https://www.soundjay.com/button/sounds/button-09.mp3" 
-         preload="auto"></audio>
-
-  <audio id="venom-sound" 
-         src="https://www.soundjay.com/button/sounds/button-10.mp3" 
-         preload="auto"></audio>
-
+  <!-- No <audio> tags needed; sounds are generated in script.js -->
   <script src="script.js"></script>
 </body>
 </html>
