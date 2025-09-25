@@ -9,33 +9,34 @@
 <body>
   <header>
     <h1>🕷️ Spider-Man vs Venom — Letter Hunt</h1>
-    <p id="instructions">Tap the matching letter to help Spider-Man web it before Venom does!</p>
+    <p id="instructions">Tap the matching letter or spell the word to help Spider-Man web it before Venom does!</p>
   </header>
 
   <main>
     <section id="hud">
+      <div id="level-box">Level: <span id="level">1</span></div>
       <div id="target-box" aria-live="polite">
-        Target Letter: <span id="target" class="big"></span>
+        Target: <span id="target" class="big"></span>
       </div>
       <div id="score" aria-live="polite">Score: 0</div>
     </section>
 
-    <section id="letters" aria-label="Letter choices"></section>
+    <section id="letters" aria-label="Choices"></section>
 
     <section id="feedback" aria-live="polite"></section>
   </main>
 
   <footer>
-    <button id="new-round" type="button" title="Next letter">Next ▶</button>
+    <button id="new-round" type="button" title="Next letter or word">Next ▶</button>
   </footer>
 
-  <!-- Spider-Man and Venom sound effects -->
+  <!-- Spider-Man and Venom sound effects (test MP3s) -->
   <audio id="thwip-sound" 
-         src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_14cf1d73e7.mp3?filename=rope-swoosh-109724.mp3" 
+         src="https://www.soundjay.com/button/sounds/button-09.mp3" 
          preload="auto"></audio>
 
   <audio id="venom-sound" 
-         src="https://cdn.pixabay.com/download/audio/2021/09/14/audio_ba4b5ac7cc.mp3?filename=monster-growl-5986.mp3" 
+         src="https://www.soundjay.com/button/sounds/button-10.mp3" 
          preload="auto"></audio>
 
   <script src="script.js"></script>
