@@ -5,12 +5,14 @@
   --ink: #fff;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  margin: 0;
   font-family: "Comic Sans MS", cursive, sans-serif;
   color: var(--ink);
-  background: linear-gradient(to bottom, var(--spidey-blue), #000);
+  background: url("https://i.ibb.co/0YF2tJ0/city-skyline.png") no-repeat center bottom,
+              linear-gradient(to top, #000 10%, var(--spidey-blue) 80%);
+  background-size: cover;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,6 +24,15 @@ header h1 {
   margin: 8px 0;
   text-shadow: 2px 2px black;
   text-align: center;
+  font-size: 1.8rem;
+}
+
+#instructions {
+  margin-bottom: 16px;
+  text-align: center;
+  background: rgba(0,0,0,0.5);
+  padding: 6px 10px;
+  border-radius: 6px;
 }
 
 #hud {
@@ -32,7 +43,7 @@ header h1 {
   justify-content: center;
 }
 #level-box, #target-box, #score {
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.6);
   border: 2px solid var(--spidey-red);
   padding: 10px 14px;
   border-radius: 10px;
@@ -80,6 +91,10 @@ footer {
   margin-top: auto;
   display: flex;
   gap: 12px;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  padding: 10px;
+  border-radius: 8px;
 }
 footer button {
   padding: 12px 18px;
@@ -98,12 +113,12 @@ footer button {
   margin-top: 20px;
 }
 #characters img {
-  max-height: 180px;
+  max-height: 200px;
   display: none;
   border: 3px solid white;
   border-radius: 10px;
-  background: black;
-  padding: 4px;
+  background: rgba(0,0,0,0.7);
+  padding: 6px;
 }
 .flash { animation: pop .3s ease; }
 @keyframes pop {
