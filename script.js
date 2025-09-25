@@ -24,33 +24,27 @@ let masterGain = null;
 let noiseBuffer = null;
 
 function initAudio() {
-  try {
-    if (!audioCtx) {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new Ctx();
-      masterGain = audioCtx.createGain();
-      masterGain.gain.value = 0.6;
-      masterGain.connect(audioCtx.destination);
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new Ctx();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.6;
+    masterGain.connect(audioCtx.destination);
 
-      // Create a 1-second white noise buffer we can reuse
-      noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 1.0, audioCtx.sampleRate);
-      const data = noiseBuffer.getChannelData(0);
-      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-    } else if (audioCtx.state !== "running") {
-      audioCtx.resume();
-    }
-  } catch (e) {
-    console.warn("Audio init failed:", e);
+    // Create a 1-second white noise buffer
+    noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate, audioCtx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  } else if (audioCtx.state !== "running") {
+    audioCtx.resume();
   }
 }
 
 enableBtn.addEventListener("click", () => {
   initAudio();
-  // Hide the button after enabling
   enableBtn.style.display = "none";
 });
 
-// If user didn't press Enable yet, try to init on first interaction
 function ensureAudio() {
   if (!audioCtx || audioCtx.state !== "running") {
     initAudio();
@@ -60,11 +54,9 @@ function ensureAudio() {
   }
 }
 
-// Play a short "thwip" (web swoosh) using filtered noise + quick envelope
 function playThwip() {
   if (!audioCtx) return;
   const t = audioCtx.currentTime;
-
   const src = audioCtx.createBufferSource();
   src.buffer = noiseBuffer;
 
@@ -83,24 +75,15 @@ function playThwip() {
   src.stop(t + 0.3);
 }
 
-// Play a "growl" by layering a low oscillator + lowpassed noise with a decay
 function playGrowl() {
   if (!audioCtx) return;
   const t = audioCtx.currentTime;
 
-  // Low oscillator with a bit of wobble (LFO)
+  // Low oscillator growl
   const osc = audioCtx.createOscillator();
   osc.type = "sawtooth";
   osc.frequency.setValueAtTime(90, t);
   osc.frequency.exponentialRampToValueAtTime(60, t + 0.4);
-
-  const lfo = audioCtx.createOscillator();
-  lfo.type = "triangle";
-  lfo.frequency.value = 15;
-
-  const lfoGain = audioCtx.createGain();
-  lfoGain.gain.value = 10; // depth of wobble
-  lfo.connect(lfoGain).connect(osc.frequency);
 
   const g1 = audioCtx.createGain();
   g1.gain.setValueAtTime(0.0001, t);
@@ -109,11 +92,9 @@ function playGrowl() {
 
   osc.connect(g1).connect(masterGain);
   osc.start(t);
-  lfo.start(t);
   osc.stop(t + 0.65);
-  lfo.stop(t + 0.65);
 
-  // Add a short burst of lowpassed noise
+  // Add noise layer
   const noise = audioCtx.createBufferSource();
   noise.buffer = noiseBuffer;
 
@@ -131,16 +112,15 @@ function playGrowl() {
   noise.stop(t + 0.65);
 }
 
-// ====== UI Helpers ======
 function playSoundCorrect() { ensureAudio(); playThwip(); }
 function playSoundWrong()   { ensureAudio(); playGrowl(); }
 
+// ====== UI Helpers ======
 function setFeedback(msg, isWin) {
   feedbackEl.textContent = msg;
   feedbackEl.className = isWin ? "win" : "lose";
   lettersEl.classList.remove("flash-win", "flash-lose");
-  // restart CSS animation
-  void lettersEl.offsetWidth;
+  void lettersEl.offsetWidth; // restart CSS animation
   lettersEl.classList.add(isWin ? "flash-win" : "flash-lose");
 }
 
@@ -189,7 +169,6 @@ function renderLettersLevel1(target) {
     btn.className = "letter";
     btn.type = "button";
     btn.textContent = letter;
-    btn.setAttribute("aria-label", `Choose letter ${letter}`);
 
     btn.addEventListener("click", () => {
       if (letter === target) {
@@ -217,9 +196,7 @@ function renderLettersWord(target) {
   const needed = target.split("");
   let index = 0;
 
-  // Pool: target letters + a few randoms
-  const unique = [...new Set(needed)];
-  const pool = [...unique];
+  const pool = [...new Set(needed)];
   while (pool.length < needed.length + 3) {
     pool.push(alphabet[Math.floor(Math.random() * alphabet.length)]);
   }
@@ -269,7 +246,6 @@ function newRound() {
 
 nextBtn.addEventListener("click", newRound);
 
-// Allow keyboard shortcuts (optional)
 document.addEventListener("keydown", (e) => {
   const k = e.key?.toUpperCase();
   if (alphabet.includes(k)) {
@@ -280,5 +256,5 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-// Start the first round
+// ====== Start ======
 newRound();
