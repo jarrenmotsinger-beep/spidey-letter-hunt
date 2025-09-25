@@ -8,9 +8,9 @@
 </head>
 <body>
   <header>
-    <h1>🕷️ <span style="color:#e30613;">Spider-Man</span> vs <span style="color:#fff;">Venom</span> — Letter Hunt</h1>
+    <h1>🕷️ <span style="color:#e30613;">Spider-Man</span> vs <span style="color:#111;">Venom</span> — Word Battle</h1>
     <p id="instructions">
-      Tap the matching letter or spell the word to help Spider-Man web it before Venom does!
+      Help Spider-Man defeat Venom by completing the challenges!
     </p>
   </header>
 
@@ -24,16 +24,20 @@
     </section>
 
     <section id="letters" aria-label="Choices"></section>
-
     <section id="feedback" aria-live="polite"></section>
+
+    <!-- Character images -->
+    <div id="characters">
+      <img id="spidey-img" src="https://i.imgur.com/5R3R6eW.png" alt="Spider-Man" />
+      <img id="venom-img" src="https://i.imgur.com/jM3AsF5.png" alt="Venom" />
+    </div>
   </main>
 
-  <footer style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:20px;">
-    <button id="enable-audio" type="button" title="Enable sound effects">Enable Sound 🔊</button>
-    <button id="new-round" type="button" title="Next letter or word">Next ▶</button>
+  <footer>
+    <button id="enable-audio" type="button">Enable Sound 🔊</button>
+    <button id="new-round" type="button">Next ▶</button>
   </footer>
 
-  <!-- No <audio> tags needed; sounds are generated in script.js -->
   <script src="script.js"></script>
 </body>
 </html>
