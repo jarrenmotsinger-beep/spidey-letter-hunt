@@ -1,10 +1,12 @@
-// ====== Foundations ======
+// ====== Elements ======
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const targetEl = document.getElementById("target");
 const lettersEl = document.getElementById("letters");
 const feedbackEl = document.getElementById("feedback");
 const scoreEl = document.getElementById("score");
 const nextBtn = document.getElementById("new-round");
+
+// Audio elements
 const thwipSound = document.getElementById("thwip-sound");
 const venomSound = document.getElementById("venom-sound");
 
@@ -43,29 +45,19 @@ function renderChoices(choices) {
 
     btn.addEventListener("click", () => {
       if (letter === target) {
+        thwipSound.currentTime = 0;
+        thwipSound.play();
         btn.classList.add("correct");
         setFeedback("🕸️ Thwip! Spider-Man webbed the right letter!", true);
         updateScore(+1);
         // lock current round after a correct pick
         Array.from(lettersEl.children).forEach(b => b.disabled = true);
       } else {
+        venomSound.currentTime = 0;
+        venomSound.play();
         btn.classList.add("wrong");
         setFeedback("😈 Venom strikes! Try again!", false);
         updateScore(-1);
-        if (letter === target) {
-  thwipSound.currentTime = 0;  // rewind sound
-  thwipSound.play();           // play it
-  btn.classList.add("correct");
-  setFeedback("🕸️ Thwip! Spider-Man webbed the right letter!", true);
-  updateScore(+1);
-  Array.from(lettersEl.children).forEach(b => b.disabled = true);
-} else {
-  venomSound.currentTime = 0;
-  venomSound.play();
-  btn.classList.add("wrong");
-  setFeedback("😈 Venom strikes! Try again!", false);
-  updateScore(-1);
-}
       }
     });
 
@@ -83,6 +75,8 @@ function newRound() {
 }
 
 nextBtn.addEventListener("click", newRound);
+
+// Allow keyboard shortcuts (optional)
 document.addEventListener("keydown", (e) => {
   const k = e.key?.toUpperCase();
   if (alphabet.includes(k)) {
