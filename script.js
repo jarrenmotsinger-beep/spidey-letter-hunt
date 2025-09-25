@@ -52,6 +52,20 @@ function renderChoices(choices) {
         btn.classList.add("wrong");
         setFeedback("😈 Venom strikes! Try again!", false);
         updateScore(-1);
+        if (letter === target) {
+  thwipSound.currentTime = 0;  // rewind sound
+  thwipSound.play();           // play it
+  btn.classList.add("correct");
+  setFeedback("🕸️ Thwip! Spider-Man webbed the right letter!", true);
+  updateScore(+1);
+  Array.from(lettersEl.children).forEach(b => b.disabled = true);
+} else {
+  venomSound.currentTime = 0;
+  venomSound.play();
+  btn.classList.add("wrong");
+  setFeedback("😈 Venom strikes! Try again!", false);
+  updateScore(-1);
+}
       }
     });
 
