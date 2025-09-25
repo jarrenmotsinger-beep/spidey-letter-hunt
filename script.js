@@ -5,6 +5,8 @@ const lettersEl = document.getElementById("letters");
 const feedbackEl = document.getElementById("feedback");
 const scoreEl = document.getElementById("score");
 const nextBtn = document.getElementById("new-round");
+const thwipSound = document.getElementById("thwip-sound");
+const venomSound = document.getElementById("venom-sound");
 
 let score = 0;
 let target = null;
