@@ -1,71 +1,40 @@
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(to bottom, #e30613, #0b2c61);
-  color: white;
-}
-
-h1, h2 {
-  font-family: "Comic Sans MS", cursive, sans-serif;
-  margin: 20px 0;
-}
-
-button {
-  margin: 10px;
-  padding: 12px 18px;
-  font-size: 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #e30613;
-  color: white;
-  transition: transform 0.2s;
-}
-
-button:hover {
-  transform: scale(1.1);
-  background: #b3040f;
-}
-
-#hub {
-  padding: 20px;
-}
-
-#game-area {
-  margin-top: 20px;
-}
-
-/* Math characters */
-#math-characters {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 40px;
-}
-
-#math-characters img {
-  width: 180px;
-  height: auto;
-  transition: 0.5s;
-}
-
-/* Venom attack animation */
-@keyframes venom-attack {
-  0%   { left: -300px; bottom: 0; opacity: 0; }
-  50%  { left: 40%; bottom: 150px; opacity: 1; transform: scale(1.2); }
-  100% { left: 100%; bottom: 0; opacity: 0; }
-}
-
-#venom-attack {
+/* Web shoot line */
+#web-line {
   position: fixed;
-  bottom: 0;
-  left: -300px;
-  width: 250px;
-  pointer-events: none;
-  z-index: 9999;
+  bottom: 150px;
+  left: 180px; /* adjust to Spider-Man position */
+  width: 0;
+  height: 6px;
+  background: white;
+  z-index: 1000;
   display: none;
+}
+
+/* Web animation */
+@keyframes web-shoot {
+  0%   { width: 0; opacity: 1; }
+  70%  { width: 600px; opacity: 1; }
+  100% { width: 600px; opacity: 0; }
+}
+
+/* THWIP bubble */
+#thwip {
+  position: fixed;
+  top: 30%;
+  left: 40%;
+  font-size: 60px;
+  font-family: "Comic Sans MS", cursive;
+  color: white;
+  text-shadow: 3px 3px #000;
+  z-index: 1001;
+  display: none;
+  transform: scale(0.5);
+}
+
+/* THWIP animation */
+@keyframes thwip-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  30%  { transform: scale(1.2); opacity: 1; }
+  70%  { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
 }
