@@ -24,9 +24,24 @@ function returnToHub() {
 }
 
 /* ===========================
-   PHONICS HUNT (teaching)
+   SOUND EFFECTS
 =========================== */
+const soundCorrect = new Audio("sounds/Correct.mp3");
+const soundWrong = new Audio("sounds/Incorrect.mp3");
 
+function playCorrect() {
+  soundCorrect.currentTime = 0;
+  soundCorrect.play();
+}
+
+function playWrong() {
+  soundWrong.currentTime = 0;
+  soundWrong.play();
+}
+
+/* ===========================
+   PHONICS HUNT
+=========================== */
 function startPhonicsHunt(container) {
   container.innerHTML = `
     <h2>🎵 Phonics Hunt</h2>
@@ -47,7 +62,6 @@ function startPhonicsHunt(container) {
     S: { clue: "☀️", sound: "s" }
   };
 
-  // Pick a random letter
   const keys = Object.keys(sounds);
   const target = keys[Math.floor(Math.random() * keys.length)];
   const clueType = Math.random() > 0.5 ? "emoji" : "sound";
@@ -60,7 +74,6 @@ function startPhonicsHunt(container) {
     document.getElementById("play-sound").onclick = () => speakLetter(sounds[target].sound);
   }
 
-  // Make buttons
   const pool = [target];
   while (pool.length < 6) {
     const r = letters[Math.floor(Math.random() * letters.length)];
@@ -78,15 +91,16 @@ function startPhonicsHunt(container) {
     btn.onclick = () => {
       if (letter === target) {
         document.getElementById("phonics-feedback").textContent = "🕸️ Thwip! Correct!";
+        playCorrect();
       } else {
         document.getElementById("phonics-feedback").textContent = "😈 Venom got you!";
+        playWrong();
       }
     };
     buttonContainer.appendChild(btn);
   });
 }
 
-// speech synthesis
 function speakLetter(sound) {
   const utter = new SpeechSynthesisUtterance(sound);
   utter.rate = 0.7;
@@ -96,7 +110,6 @@ function speakLetter(sound) {
 /* ===========================
    SPELLING BUILDER
 =========================== */
-
 function startSpellingBuilder(container) {
   container.innerHTML = `
     <h2>✏️ Spelling Builder</h2>
@@ -134,8 +147,10 @@ function startSpellingBuilder(container) {
     btn.onclick = () => {
       if (letter === correctLetter) {
         document.getElementById("spelling-feedback").textContent = `🕸️ Correct! ${targetWord}`;
+        playCorrect();
       } else {
         document.getElementById("spelling-feedback").textContent = "😈 Venom got you!";
+        playWrong();
       }
     };
     buttonContainer.appendChild(btn);
@@ -145,7 +160,6 @@ function startSpellingBuilder(container) {
 /* ===========================
    MATH BATTLE
 =========================== */
-
 function startMathBattle(container) {
   container.innerHTML = `
     <h2>🔢 Math Battle</h2>
@@ -185,9 +199,11 @@ function startMathBattle(container) {
         document.getElementById("math-feedback").textContent = "🕸️ Spider-Man wins!";
         document.getElementById("math-spidey").style.filter = "none";
         document.getElementById("math-monster").style.display = "none";
+        playCorrect();
       } else {
         document.getElementById("math-feedback").textContent = "😈 The monster ate Spider-Man!";
         document.getElementById("math-spidey").style.filter = "grayscale(100%)";
+        playWrong();
       }
     };
     buttonContainer.appendChild(btn);
