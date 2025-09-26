@@ -1,30 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spider-Man Learning Hub</title>
-  <link rel="stylesheet" href="style.css?v=8" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
+  <div id="hub">
     <h1>🕷️ Spider-Man Learning Hub</h1>
     <p>Choose your mission to help Spider-Man stop Venom!</p>
-  </header>
+    <button onclick="startGame('letters')">🎵 Phonics Hunt</button>
+    <button onclick="startGame('spelling')">✏️ Spelling Builder</button>
+    <button onclick="startGame('math')">🔢 Math Battle</button>
+    <button onclick="startGame('memory')">🧩 Memory Puzzle</button>
+    <button onclick="startGame('boss')">🎭 Boss Battle</button>
+  </div>
 
-  <main id="hub">
-    <button class="game-btn" onclick="startGame('letters')">🔤 Phonics Hunt</button>
-    <button class="game-btn" onclick="startGame('spelling')">✏️ Spelling Builder</button>
-    <button class="game-btn" onclick="startGame('math')">🔢 Math Battle</button>
-    <button class="game-btn" onclick="startGame('memory')">🧩 Memory Puzzle</button>
-    <button class="game-btn" onclick="startGame('boss')">🎭 Boss Battle</button>
-  </main>
-
-  <section id="game-screen" style="display:none;">
+  <div id="game-screen" style="display:none;">
     <div id="game-area"></div>
     <button onclick="returnToHub()">⬅️ Back to Hub</button>
-  </section>
+  </div>
 
-  <script src="script.js?v=8"></script>
+  <script src="script.js"></script>
 </body>
 </html>
