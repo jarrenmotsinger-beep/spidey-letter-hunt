@@ -8,9 +8,9 @@ function startGame(mode) {
   if (mode === "letters") {
     startPhonicsHunt(gameArea);
   } else if (mode === "spelling") {
-    gameArea.innerHTML = `<p>✏️ Spelling Builder coming soon.</p>`;
+    startSpellingBuilder(gameArea);
   } else if (mode === "math") {
-    gameArea.innerHTML = `<p>🔢 Math Battle coming soon.</p>`;
+    startMathBattle(gameArea);
   } else if (mode === "memory") {
     gameArea.innerHTML = `<p>🧩 Memory Puzzle coming soon.</p>`;
   } else if (mode === "boss") {
@@ -39,22 +39,22 @@ function startPhonicsHunt(container) {
 
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   const sounds = {
-    A: { word: "Apple 🍎", sound: "a" },
-    B: { word: "Ball 🏀", sound: "b" },
-    C: { word: "Cat 🐱", sound: "c" },
-    D: { word: "Dog 🐶", sound: "d" },
-    M: { word: "Moon 🌙", sound: "m" },
-    S: { word: "Sun ☀️", sound: "s" },
+    A: { clue: "🍎", sound: "a" },
+    B: { clue: "🏀", sound: "b" },
+    C: { clue: "🐱", sound: "c" },
+    D: { clue: "🐶", sound: "d" },
+    M: { clue: "🌙", sound: "m" },
+    S: { clue: "☀️", sound: "s" }
   };
 
-  // Pick a random letter from our teaching set
+  // Pick a random letter
   const keys = Object.keys(sounds);
   const target = keys[Math.floor(Math.random() * keys.length)];
-  const clueType = Math.random() > 0.5 ? "word" : "sound";
+  const clueType = Math.random() > 0.5 ? "emoji" : "sound";
 
   const clueEl = document.getElementById("phonics-clue");
-  if (clueType === "word") {
-    clueEl.innerHTML = `<strong>Clue:</strong> ${sounds[target].word}`;
+  if (clueType === "emoji") {
+    clueEl.innerHTML = `<strong>Clue:</strong> ${sounds[target].clue}`;
   } else {
     clueEl.innerHTML = `<button id="play-sound">▶️ Play Sound</button>`;
     document.getElementById("play-sound").onclick = () => speakLetter(sounds[target].sound);
@@ -86,9 +86,110 @@ function startPhonicsHunt(container) {
   });
 }
 
-/* ===== Speech synthesis for phonics sounds ===== */
+// speech synthesis
 function speakLetter(sound) {
   const utter = new SpeechSynthesisUtterance(sound);
-  utter.rate = 0.7; // slower for clarity
+  utter.rate = 0.7;
   speechSynthesis.speak(utter);
+}
+
+/* ===========================
+   SPELLING BUILDER
+=========================== */
+
+function startSpellingBuilder(container) {
+  container.innerHTML = `
+    <h2>✏️ Spelling Builder</h2>
+    <p>Fill in the missing letter!</p>
+    <div id="spelling-word"></div>
+    <div id="spelling-buttons"></div>
+    <p id="spelling-feedback"></p>
+    <button onclick="startSpellingBuilder(document.getElementById('game-area'))">🔄 New Word</button>
+  `;
+
+  const words = ["SPIDER", "VENOM", "HERO", "POWER", "MASK", "CITY", "WEB"];
+  const targetWord = words[Math.floor(Math.random() * words.length)];
+  const missingIdx = Math.floor(Math.random() * targetWord.length);
+
+  const display = targetWord.split("");
+  display[missingIdx] = "_";
+  document.getElementById("spelling-word").innerHTML = `<strong>${display.join("")}</strong>`;
+
+  const correctLetter = targetWord[missingIdx];
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const pool = [correctLetter];
+  while (pool.length < 5) {
+    const r = letters[Math.floor(Math.random() * letters.length)];
+    if (!pool.includes(r)) pool.push(r);
+  }
+  pool.sort(() => Math.random() - 0.5);
+
+  const buttonContainer = document.getElementById("spelling-buttons");
+  pool.forEach(letter => {
+    const btn = document.createElement("button");
+    btn.textContent = letter;
+    btn.style.margin = "8px";
+    btn.style.padding = "16px";
+    btn.style.fontSize = "24px";
+    btn.onclick = () => {
+      if (letter === correctLetter) {
+        document.getElementById("spelling-feedback").textContent = `🕸️ Correct! ${targetWord}`;
+      } else {
+        document.getElementById("spelling-feedback").textContent = "😈 Venom got you!";
+      }
+    };
+    buttonContainer.appendChild(btn);
+  });
+}
+
+/* ===========================
+   MATH BATTLE
+=========================== */
+
+function startMathBattle(container) {
+  container.innerHTML = `
+    <h2>🔢 Math Battle</h2>
+    <p>Solve the problem before the monster eats Spider-Man!</p>
+    <div id="math-problem"></div>
+    <div id="math-buttons"></div>
+    <p id="math-feedback"></p>
+    <div id="math-characters">
+      <img id="math-spidey" src="https://i.ibb.co/2jK8k1B/spiderman.png" alt="Spider-Man" />
+      <img id="math-monster" src="https://i.ibb.co/4PX8qrb/venom.png" alt="Monster" />
+    </div>
+    <button onclick="startMathBattle(document.getElementById('game-area'))">🔄 New Problem</button>
+  `;
+
+  const a = Math.floor(Math.random() * 10);
+  const b = Math.floor(Math.random() * 10);
+  const answer = a + b;
+
+  document.getElementById("math-problem").innerHTML = `<strong>${a} + ${b} = ?</strong>`;
+
+  const pool = [answer];
+  while (pool.length < 4) {
+    const wrong = Math.floor(Math.random() * 20);
+    if (!pool.includes(wrong)) pool.push(wrong);
+  }
+  pool.sort(() => Math.random() - 0.5);
+
+  const buttonContainer = document.getElementById("math-buttons");
+  pool.forEach(num => {
+    const btn = document.createElement("button");
+    btn.textContent = num;
+    btn.style.margin = "8px";
+    btn.style.padding = "16px";
+    btn.style.fontSize = "24px";
+    btn.onclick = () => {
+      if (num === answer) {
+        document.getElementById("math-feedback").textContent = "🕸️ Spider-Man wins!";
+        document.getElementById("math-spidey").style.filter = "none";
+        document.getElementById("math-monster").style.display = "none";
+      } else {
+        document.getElementById("math-feedback").textContent = "😈 The monster ate Spider-Man!";
+        document.getElementById("math-spidey").style.filter = "grayscale(100%)";
+      }
+    };
+    buttonContainer.appendChild(btn);
+  });
 }
