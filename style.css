@@ -38,3 +38,13 @@ header {
 #game-screen {
   padding: 20px;
 }
+
+#math-characters {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 20px;
+}
+#math-characters img {
+  max-height: 150px;
+}
