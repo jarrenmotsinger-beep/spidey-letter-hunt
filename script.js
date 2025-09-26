@@ -24,9 +24,9 @@ function returnToHub() {
 }
 
 /* ===========================
-   SOUND EFFECTS (with versioning)
+   SOUND EFFECTS
 =========================== */
-const VERSION = 2; // bump this when you replace mp3/png files
+const VERSION = 3; // bump when you update assets
 const soundCorrect = new Audio(`sounds/Correct.mp3?v=${VERSION}`);
 const soundWrong = new Audio(`sounds/Incorrect.mp3?v=${VERSION}`);
 
@@ -49,13 +49,7 @@ function venomAttack() {
   if (!venom) {
     venom = document.createElement("img");
     venom.id = "venom-attack";
-    venom.src = `images/venom.PNG?v=${VERSION}`;
-    venom.style.position = "fixed";
-    venom.style.bottom = "0";
-    venom.style.left = "-300px";
-    venom.style.width = "250px";
-    venom.style.zIndex = "9999";
-    venom.style.pointerEvents = "none";
+    venom.src = `images/venom.png?v=${VERSION}`;
     document.body.appendChild(venom);
   }
 
@@ -119,9 +113,6 @@ function startPhonicsHunt(container) {
   pool.forEach((letter) => {
     const btn = document.createElement("button");
     btn.textContent = letter;
-    btn.style.margin = "8px";
-    btn.style.padding = "16px";
-    btn.style.fontSize = "24px";
     btn.onclick = () => {
       if (letter === target) {
         document.getElementById("phonics-feedback").textContent =
@@ -179,9 +170,6 @@ function startSpellingBuilder(container) {
   pool.forEach((letter) => {
     const btn = document.createElement("button");
     btn.textContent = letter;
-    btn.style.margin = "8px";
-    btn.style.padding = "16px";
-    btn.style.fontSize = "24px";
     btn.onclick = () => {
       if (letter === correctLetter) {
         document.getElementById(
@@ -209,8 +197,8 @@ function startMathBattle(container) {
     <div id="math-buttons"></div>
     <p id="math-feedback"></p>
     <div id="math-characters">
-      <img id="math-spidey" src="images/spiderman.PNG?v=${VERSION}" alt="Spider-Man" />
-      <img id="math-monster" src="images/venom.PNG?v=${VERSION}" alt="Venom" />
+      <img id="math-spidey" src="images/spiderman.png?v=${VERSION}" alt="Spider-Man" />
+      <img id="math-monster" src="images/venom.png?v=${VERSION}" alt="Venom" />
     </div>
     <button onclick="startMathBattle(document.getElementById('game-area'))">🔄 New Problem</button>
   `;
@@ -234,9 +222,6 @@ function startMathBattle(container) {
   pool.forEach((num) => {
     const btn = document.createElement("button");
     btn.textContent = num;
-    btn.style.margin = "8px";
-    btn.style.padding = "16px";
-    btn.style.fontSize = "24px";
     btn.onclick = () => {
       if (num === answer) {
         document.getElementById("math-feedback").textContent =
