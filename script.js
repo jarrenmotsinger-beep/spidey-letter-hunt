@@ -6,7 +6,7 @@ function startGame(mode) {
   gameArea.innerHTML = ""; // reset
 
   if (mode === "letters") {
-    startLetterHunt(gameArea);
+    startPhonicsHunt(gameArea);
   } else if (mode === "spelling") {
     gameArea.innerHTML = `<p>✏️ Spelling Builder coming soon.</p>`;
   } else if (mode === "math") {
@@ -24,31 +24,51 @@ function returnToHub() {
 }
 
 /* ===========================
-   LETTER HUNT GAME MODE
+   PHONICS HUNT (teaching)
 =========================== */
 
-function startLetterHunt(container) {
+function startPhonicsHunt(container) {
   container.innerHTML = `
-    <h2>🔤 Letter Hunt</h2>
-    <p>Find the matching letter before Venom does!</p>
-    <div id="letter-target"></div>
-    <div id="letter-buttons"></div>
-    <p id="letter-feedback"></p>
-    <button onclick="startLetterHunt(document.getElementById('game-area'))">🔄 New Round</button>
+    <h2>🎵 Phonics Hunt</h2>
+    <p>Listen or look at the clue and pick the correct letter!</p>
+    <div id="phonics-clue"></div>
+    <div id="phonics-buttons"></div>
+    <p id="phonics-feedback"></p>
+    <button onclick="startPhonicsHunt(document.getElementById('game-area'))">🔄 New Round</button>
   `;
 
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  const target = alphabet[Math.floor(Math.random() * alphabet.length)];
-  document.getElementById("letter-target").innerHTML = `<strong>Target: ${target}</strong>`;
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const sounds = {
+    A: { word: "Apple 🍎", sound: "a" },
+    B: { word: "Ball 🏀", sound: "b" },
+    C: { word: "Cat 🐱", sound: "c" },
+    D: { word: "Dog 🐶", sound: "d" },
+    M: { word: "Moon 🌙", sound: "m" },
+    S: { word: "Sun ☀️", sound: "s" },
+  };
 
-  const buttonContainer = document.getElementById("letter-buttons");
-  let pool = [target];
+  // Pick a random letter from our teaching set
+  const keys = Object.keys(sounds);
+  const target = keys[Math.floor(Math.random() * keys.length)];
+  const clueType = Math.random() > 0.5 ? "word" : "sound";
+
+  const clueEl = document.getElementById("phonics-clue");
+  if (clueType === "word") {
+    clueEl.innerHTML = `<strong>Clue:</strong> ${sounds[target].word}`;
+  } else {
+    clueEl.innerHTML = `<button id="play-sound">▶️ Play Sound</button>`;
+    document.getElementById("play-sound").onclick = () => speakLetter(sounds[target].sound);
+  }
+
+  // Make buttons
+  const pool = [target];
   while (pool.length < 6) {
-    const r = alphabet[Math.floor(Math.random() * alphabet.length)];
+    const r = letters[Math.floor(Math.random() * letters.length)];
     if (!pool.includes(r)) pool.push(r);
   }
   pool.sort(() => Math.random() - 0.5);
 
+  const buttonContainer = document.getElementById("phonics-buttons");
   pool.forEach(letter => {
     const btn = document.createElement("button");
     btn.textContent = letter;
@@ -57,11 +77,18 @@ function startLetterHunt(container) {
     btn.style.fontSize = "24px";
     btn.onclick = () => {
       if (letter === target) {
-        document.getElementById("letter-feedback").textContent = "🕸️ Thwip! Correct!";
+        document.getElementById("phonics-feedback").textContent = "🕸️ Thwip! Correct!";
       } else {
-        document.getElementById("letter-feedback").textContent = "😈 Venom got you!";
+        document.getElementById("phonics-feedback").textContent = "😈 Venom got you!";
       }
     };
     buttonContainer.appendChild(btn);
   });
+}
+
+/* ===== Speech synthesis for phonics sounds ===== */
+function speakLetter(sound) {
+  const utter = new SpeechSynthesisUtterance(sound);
+  utter.rate = 0.7; // slower for clarity
+  speechSynthesis.speak(utter);
 }
