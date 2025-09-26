@@ -1,231 +1,108 @@
-function startGame(mode) {
-  document.getElementById("hub").style.display = "none";
-  document.getElementById("game-screen").style.display = "block";
-
-  const gameArea = document.getElementById("game-area");
-  gameArea.innerHTML = ""; // reset
-
-  if (mode === "letters") {
-    startPhonicsHunt(gameArea);
-  } else if (mode === "spelling") {
-    startSpellingBuilder(gameArea);
-  } else if (mode === "math") {
-    startMathBattle(gameArea);
-  } else if (mode === "memory") {
-    gameArea.innerHTML = `<p>🧩 Memory Puzzle coming soon.</p>`;
-  } else if (mode === "boss") {
-    gameArea.innerHTML = `<p>🎭 Boss Battle coming soon.</p>`;
-  }
-}
-
-function returnToHub() {
-  document.getElementById("game-screen").style.display = "none";
-  document.getElementById("hub").style.display = "flex";
-}
-
 /* ===========================
-   SOUND EFFECTS
+   SOUNDS
 =========================== */
-const VERSION = 4; // bump when you update assets
-const soundCorrect = new Audio(`sounds/Correct.mp3?v=${VERSION}`);
-const soundWrong = new Audio(`sounds/Incorrect.mp3?v=${VERSION}`);
+const correctSound = new Audio("sounds/Correct.mp3");
+const incorrectSound = new Audio("sounds/Incorrect.mp3");
 
-function playCorrect() {
-  soundCorrect.currentTime = 0;
-  soundCorrect.play();
+function handleCorrectAnswer() {
+  correctSound.currentTime = 0;
+  correctSound.play();
+  showWebEffect();
 }
 
-function playWrong() {
-  soundWrong.currentTime = 0;
-  soundWrong.play();
-}
-
-/* ===========================
-   VENOM ATTACK
-=========================== */
-function venomAttack() {
-  let venom = document.getElementById("venom-attack");
-  if (!venom) {
-    venom = document.createElement("img");
-    venom.id = "venom-attack";
-    venom.src = `images/venom.png?v=${VERSION}`;
-    document.body.appendChild(venom);
-  }
-  venom.style.display = "block";
-  venom.style.animation = "venom-attack 2s ease-in-out";
-  venom.addEventListener("animationend", () => {
-    venom.style.display = "none";
-    venom.style.animation = "";
-  }, { once: true });
+function handleIncorrectAnswer() {
+  incorrectSound.currentTime = 0;
+  incorrectSound.play();
 }
 
 /* ===========================
    SPIDER-MAN WEB SHOOT
 =========================== */
-function webShoot() {
-  let web = document.getElementById("web-line");
-  if (!web) {
-    web = document.createElement("div");
-    web.id = "web-line";
-    document.body.appendChild(web);
-  }
-  web.style.display = "block";
-  web.style.animation = "web-shoot 0.8s linear";
-  web.addEventListener("animationend", () => {
-    web.style.display = "none";
-    web.style.animation = "";
-  }, { once: true });
+function showWebEffect() {
+  const web = document.createElement("div");
+  web.className = "web-effect";
+  document.body.appendChild(web);
 
-  let thwip = document.getElementById("thwip");
-  if (!thwip) {
-    thwip = document.createElement("div");
-    thwip.id = "thwip";
-    thwip.textContent = "THWIP!";
-    document.body.appendChild(thwip);
-  }
-  thwip.style.display = "block";
-  thwip.style.animation = "thwip-pop 1s ease-out";
-  thwip.addEventListener("animationend", () => {
-    thwip.style.display = "none";
-    thwip.style.animation = "";
-  }, { once: true });
+  // Remove it after animation ends
+  setTimeout(() => {
+    web.remove();
+  }, 500);
+
+  // Also show "THWIP!" bubble
+  const thwip = document.createElement("div");
+  thwip.textContent = "THWIP!";
+  thwip.className = "thwip";
+  document.body.appendChild(thwip);
+
+  setTimeout(() => {
+    thwip.remove();
+  }, 800);
 }
 
 /* ===========================
-   PHONICS HUNT
+   VENOM ATTACK
 =========================== */
-function startPhonicsHunt(container) {
-  container.innerHTML = `
-    <h2>🎵 Phonics Hunt</h2>
-    <p>Pick the correct letter!</p>
-    <div id="phonics-buttons"></div>
-    <p id="phonics-feedback"></p>
-  `;
+function showVenom(container) {
+  container.innerHTML = `<img src="images/venom.png" class="character-img venom-attack">`;
 
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  const target = letters[Math.floor(Math.random() * letters.length)];
-  document.getElementById("phonics-feedback").textContent = `Find: ${target}`;
-
-  const pool = [target];
-  while (pool.length < 6) {
-    const r = letters[Math.floor(Math.random() * letters.length)];
-    if (!pool.includes(r)) pool.push(r);
-  }
-  pool.sort(() => Math.random() - 0.5);
-
-  const buttonContainer = document.getElementById("phonics-buttons");
-  pool.forEach((letter) => {
-    const btn = document.createElement("button");
-    btn.textContent = letter;
-    btn.onclick = () => {
-      if (letter === target) {
-        document.getElementById("phonics-feedback").textContent =
-          "🕸️ Thwip! Correct!";
-        playCorrect();
-        webShoot();
-      } else {
-        document.getElementById("phonics-feedback").textContent =
-          "😈 Venom got you!";
-        playWrong();
-        venomAttack();
-      }
-    };
-    buttonContainer.appendChild(btn);
-  });
+  const venomImg = container.querySelector(".venom-attack");
+  venomImg.style.position = "relative";
+  venomImg.style.animation = "venomJump 1s forwards";
 }
 
 /* ===========================
-   SPELLING BUILDER
+   GLOBAL STYLES INJECT
+   (for animations like web + venom)
 =========================== */
-function startSpellingBuilder(container) {
-  container.innerHTML = `
-    <h2>✏️ Spelling Builder</h2>
-    <p>Fill in the missing letter!</p>
-    <div id="spelling-word"></div>
-    <div id="spelling-buttons"></div>
-    <p id="spelling-feedback"></p>
-  `;
-
-  const words = ["SPIDER", "VENOM", "HERO", "POWER", "MASK", "CITY", "WEB"];
-  const targetWord = words[Math.floor(Math.random() * words.length)];
-  const missingIdx = Math.floor(Math.random() * targetWord.length);
-
-  const display = targetWord.split("");
-  display[missingIdx] = "_";
-  document.getElementById("spelling-word").innerHTML = `<strong>${display.join("")}</strong>`;
-
-  const correctLetter = targetWord[missingIdx];
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  const pool = [correctLetter];
-  while (pool.length < 5) {
-    const r = letters[Math.floor(Math.random() * letters.length)];
-    if (!pool.includes(r)) pool.push(r);
+const style = document.createElement("style");
+style.innerHTML = `
+  .character-img {
+    width: 150px;
+    margin-top: 15px;
   }
-  pool.sort(() => Math.random() - 0.5);
 
-  const buttonContainer = document.getElementById("spelling-buttons");
-  pool.forEach((letter) => {
-    const btn = document.createElement("button");
-    btn.textContent = letter;
-    btn.onclick = () => {
-      if (letter === correctLetter) {
-        document.getElementById("spelling-feedback").textContent = `🕸️ Correct! ${targetWord}`;
-        playCorrect();
-        webShoot();
-      } else {
-        document.getElementById("spelling-feedback").textContent = "😈 Venom got you!";
-        playWrong();
-        venomAttack();
-      }
-    };
-    buttonContainer.appendChild(btn);
-  });
-}
-
-/* ===========================
-   MATH BATTLE
-=========================== */
-function startMathBattle(container) {
-  container.innerHTML = `
-    <h2>🔢 Math Battle</h2>
-    <p>Solve the problem before Venom eats Spider-Man!</p>
-    <div id="math-problem"></div>
-    <div id="math-buttons"></div>
-    <p id="math-feedback"></p>
-    <div id="math-characters">
-      <img id="math-spidey" src="images/spiderman.png?v=${VERSION}" alt="Spider-Man" />
-      <img id="math-monster" src="images/venom.png?v=${VERSION}" alt="Venom" />
-    </div>
-  `;
-
-  const a = Math.floor(Math.random() * 10);
-  const b = Math.floor(Math.random() * 10);
-  const answer = a + b;
-
-  document.getElementById("math-problem").innerHTML = `<strong>${a} + ${b} = ?</strong>`;
-
-  const pool = [answer];
-  while (pool.length < 4) {
-    const wrong = Math.floor(Math.random() * 20);
-    if (!pool.includes(wrong)) pool.push(wrong);
+  .web-effect {
+    position: absolute;
+    top: 50%;
+    left: 20%;
+    width: 120px;
+    height: 5px;
+    background: white;
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left center;
+    animation: shoot 0.5s forwards;
+    z-index: 999;
   }
-  pool.sort(() => Math.random() - 0.5);
 
-  const buttonContainer = document.getElementById("math-buttons");
-  pool.forEach((num) => {
-    const btn = document.createElement("button");
-    btn.textContent = num;
-    btn.onclick = () => {
-      if (num === answer) {
-        document.getElementById("math-feedback").textContent = "🕸️ Spider-Man wins!";
-        playCorrect();
-        webShoot();
-      } else {
-        document.getElementById("math-feedback").textContent = "😈 Venom got you!";
-        playWrong();
-        venomAttack();
-      }
-    };
-    buttonContainer.appendChild(btn);
-  });
-}
+  @keyframes shoot {
+    0% { transform: scaleX(0); opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
+  }
+
+  .thwip {
+    position: fixed;
+    top: 30%;
+    left: 40%;
+    font-size: 50px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 3px 3px #000;
+    animation: thwip-pop 0.8s ease-out forwards;
+    z-index: 1000;
+  }
+
+  @keyframes thwip-pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    30% { transform: scale(1.2); opacity: 1; }
+    70% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0; }
+  }
+
+  @keyframes venomJump {
+    0% { left: -200px; opacity: 0; }
+    50% { left: 50px; opacity: 1; }
+    100% { left: 0; opacity: 1; }
+  }
+`;
+document.head.appendChild(style);
