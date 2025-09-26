@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Memory Puzzle</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game-container">
+    <h2>🧠 Memory Puzzle</h2>
+    <p>Match the pairs before Venom catches you!</p>
+
+    <div id="memory-grid" class="memory-grid"></div>
+    <p id="feedback" class="feedback"></p>
+    <div id="result-img"></div>
+
+    <button onclick="startMemory()">🔄 New Game</button>
+    <a href="index.html" class="hub-btn">⬅️ Back to Hub</a>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    const grid = document.getElementById("memory-grid");
+    const feedback = document.getElementById("feedback");
+    const resultImg = document.getElementById("result-img");
+
+    let cards = [];
+    let flipped = [];
+    let matched = [];
+
+    const symbols = ["🕷️", "🕸️", "💥", "🏙️", "🦸", "😈"];
+
+    function startMemory() {
+      feedback.textContent = "";
+      resultImg.innerHTML = "";
+      grid.innerHTML = "";
+      flipped = [];
+      matched = [];
+
+      // Double and shuffle cards
+      cards = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+
+      cards.forEach((symbol, index) => {
+        const card = document.createElement("div");
+        card.className = "memory-card";
+        card.dataset.symbol = symbol;
+        card.textContent = "❓";
+        card.onclick = () => flipCard(card);
+        grid.appendChild(card);
+      });
+    }
+
+    function flipCard(card) {
+      if (flipped.length === 2 || card.classList.contains("matched") || card.classList.contains("flipped")) return;
+
+      card.textContent = card.dataset.symbol;
+      card.classList.add("flipped");
+      flipped.push(card);
+
+      if (flipped.length === 2) {
+        setTimeout(checkMatch, 800);
+      }
+    }
+
+    function checkMatch() {
+      const [c1, c2] = flipped;
+      if (c1.dataset.symbol === c2.dataset.symbol) {
+        c1.classList.add("matched");
+        c2.classList.add("matched");
+        matched.push(c1.dataset.symbol);
+        feedback.textContent = "🕷️ Nice match!";
+        handleCorrectAnswer();
+      } else {
+        c1.textContent = "❓";
+        c2.textContent = "❓";
+        c1.classList.remove("flipped");
+        c2.classList.remove("flipped");
+        feedback.textContent = "💀 Venom got you!";
+        handleIncorrectAnswer();
+        showVenom(resultImg);
+      }
+      flipped = [];
+
+      if (matched.length === symbols.length) {
+        feedback.textContent = "🎉 You win! Spider-Man saves the day!";
+        handleCorrectAnswer();
+        resultImg.innerHTML = `<img src="images/spiderman.png" class="character-img">`;
+      }
+    }
+
+    startMemory();
+  </script>
+</body>
+</html>
