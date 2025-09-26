@@ -1,4 +1,6 @@
-/* General page layout */
+/* ===========================
+   GENERAL PAGE LAYOUT
+=========================== */
 body {
   margin: 0;
   font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -20,10 +22,12 @@ p {
   font-size: 1.2rem;
 }
 
-/* Hub */
+/* ===========================
+   HUB PAGE
+=========================== */
 .hub-container {
   display: flex;
-  flex-direction: column;  /* ✅ vertical buttons */
+  flex-direction: column;   /* vertical buttons */
   align-items: center;
   gap: 20px;
   margin-top: 30px;
@@ -50,7 +54,9 @@ p {
   pointer-events: none;
 }
 
-/* Game containers */
+/* ===========================
+   GAME CONTAINERS
+=========================== */
 .game-container {
   display: flex;
   flex-direction: column;
@@ -81,7 +87,43 @@ p {
   font-weight: bold;
 }
 
+/* ===========================
+   CHARACTERS (Spider-Man / Venom)
+=========================== */
 .character-img {
   width: 150px;
   margin-top: 15px;
+}
+
+/* ===========================
+   MEMORY PUZZLE GAME
+=========================== */
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 80px);
+  gap: 10px;
+  margin: 20px auto;
+}
+
+.memory-card {
+  width: 80px;
+  height: 80px;
+  background: #001f54;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.memory-card:hover {
+  background: #003d99;
+  transform: scale(1.05);
+}
+
+.memory-card.matched {
+  background: #006600;
 }
