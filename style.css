@@ -1,8 +1,94 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #e30613, #0b2c61);
+  color: white;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1, h2 {
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  margin: 20px 0;
+}
+
+#hub {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.hub-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+button {
+  padding: 14px 20px;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #e30613;
+  color: white;
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.1);
+  background: #b3040f;
+}
+
+/* Game area */
+#game-area {
+  margin-top: 20px;
+}
+
+/* Math characters */
+#math-characters {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+}
+
+#math-characters img {
+  width: 180px;
+  height: auto;
+  transition: 0.5s;
+}
+
+/* Venom attack animation */
+@keyframes venom-attack {
+  0%   { left: -300px; bottom: 0; opacity: 0; }
+  50%  { left: 40%; bottom: 150px; opacity: 1; transform: scale(1.2); }
+  100% { left: 100%; bottom: 0; opacity: 0; }
+}
+
+#venom-attack {
+  position: fixed;
+  bottom: 0;
+  left: -300px;
+  width: 250px;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+}
+
 /* Web shoot line */
 #web-line {
   position: fixed;
   bottom: 150px;
-  left: 180px; /* adjust to Spider-Man position */
+  left: 180px;
   width: 0;
   height: 6px;
   background: white;
