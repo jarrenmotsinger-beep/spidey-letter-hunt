@@ -26,7 +26,7 @@ function returnToHub() {
 /* ===========================
    SOUND EFFECTS
 =========================== */
-const VERSION = 3; // bump when you update assets
+const VERSION = 4; // bump when you update assets
 const soundCorrect = new Audio(`sounds/Correct.mp3?v=${VERSION}`);
 const soundWrong = new Audio(`sounds/Incorrect.mp3?v=${VERSION}`);
 
@@ -41,29 +41,54 @@ function playWrong() {
 }
 
 /* ===========================
-   VENOM ATTACK ANIMATION
+   VENOM ATTACK
 =========================== */
 function venomAttack() {
   let venom = document.getElementById("venom-attack");
-
   if (!venom) {
     venom = document.createElement("img");
     venom.id = "venom-attack";
     venom.src = `images/venom.png?v=${VERSION}`;
     document.body.appendChild(venom);
   }
-
   venom.style.display = "block";
   venom.style.animation = "venom-attack 2s ease-in-out";
+  venom.addEventListener("animationend", () => {
+    venom.style.display = "none";
+    venom.style.animation = "";
+  }, { once: true });
+}
 
-  venom.addEventListener(
-    "animationend",
-    () => {
-      venom.style.display = "none";
-      venom.style.animation = "";
-    },
-    { once: true }
-  );
+/* ===========================
+   SPIDER-MAN WEB SHOOT
+=========================== */
+function webShoot() {
+  let web = document.getElementById("web-line");
+  if (!web) {
+    web = document.createElement("div");
+    web.id = "web-line";
+    document.body.appendChild(web);
+  }
+  web.style.display = "block";
+  web.style.animation = "web-shoot 0.8s linear";
+  web.addEventListener("animationend", () => {
+    web.style.display = "none";
+    web.style.animation = "";
+  }, { once: true });
+
+  let thwip = document.getElementById("thwip");
+  if (!thwip) {
+    thwip = document.createElement("div");
+    thwip.id = "thwip";
+    thwip.textContent = "THWIP!";
+    document.body.appendChild(thwip);
+  }
+  thwip.style.display = "block";
+  thwip.style.animation = "thwip-pop 1s ease-out";
+  thwip.addEventListener("animationend", () => {
+    thwip.style.display = "none";
+    thwip.style.animation = "";
+  }, { once: true });
 }
 
 /* ===========================
@@ -72,35 +97,14 @@ function venomAttack() {
 function startPhonicsHunt(container) {
   container.innerHTML = `
     <h2>🎵 Phonics Hunt</h2>
-    <p>Listen or look at the clue and pick the correct letter!</p>
-    <div id="phonics-clue"></div>
+    <p>Pick the correct letter!</p>
     <div id="phonics-buttons"></div>
     <p id="phonics-feedback"></p>
-    <button onclick="startPhonicsHunt(document.getElementById('game-area'))">🔄 New Round</button>
   `;
 
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  const sounds = {
-    A: { clue: "🍎", sound: "a" },
-    B: { clue: "🏀", sound: "b" },
-    C: { clue: "🐱", sound: "c" },
-    D: { clue: "🐶", sound: "d" },
-    M: { clue: "🌙", sound: "m" },
-    S: { clue: "☀️", sound: "s" }
-  };
-
-  const keys = Object.keys(sounds);
-  const target = keys[Math.floor(Math.random() * keys.length)];
-  const clueType = Math.random() > 0.5 ? "emoji" : "sound";
-
-  const clueEl = document.getElementById("phonics-clue");
-  if (clueType === "emoji") {
-    clueEl.innerHTML = `<strong>Clue:</strong> ${sounds[target].clue}`;
-  } else {
-    clueEl.innerHTML = `<button id="play-sound">▶️ Play Sound</button>`;
-    document.getElementById("play-sound").onclick = () =>
-      speakLetter(sounds[target].sound);
-  }
+  const target = letters[Math.floor(Math.random() * letters.length)];
+  document.getElementById("phonics-feedback").textContent = `Find: ${target}`;
 
   const pool = [target];
   while (pool.length < 6) {
@@ -118,20 +122,16 @@ function startPhonicsHunt(container) {
         document.getElementById("phonics-feedback").textContent =
           "🕸️ Thwip! Correct!";
         playCorrect();
+        webShoot();
       } else {
         document.getElementById("phonics-feedback").textContent =
           "😈 Venom got you!";
         playWrong();
+        venomAttack();
       }
     };
     buttonContainer.appendChild(btn);
   });
-}
-
-function speakLetter(sound) {
-  const utter = new SpeechSynthesisUtterance(sound);
-  utter.rate = 0.7;
-  speechSynthesis.speak(utter);
 }
 
 /* ===========================
@@ -144,7 +144,6 @@ function startSpellingBuilder(container) {
     <div id="spelling-word"></div>
     <div id="spelling-buttons"></div>
     <p id="spelling-feedback"></p>
-    <button onclick="startSpellingBuilder(document.getElementById('game-area'))">🔄 New Word</button>
   `;
 
   const words = ["SPIDER", "VENOM", "HERO", "POWER", "MASK", "CITY", "WEB"];
@@ -153,9 +152,7 @@ function startSpellingBuilder(container) {
 
   const display = targetWord.split("");
   display[missingIdx] = "_";
-  document.getElementById(
-    "spelling-word"
-  ).innerHTML = `<strong>${display.join("")}</strong>`;
+  document.getElementById("spelling-word").innerHTML = `<strong>${display.join("")}</strong>`;
 
   const correctLetter = targetWord[missingIdx];
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -172,14 +169,13 @@ function startSpellingBuilder(container) {
     btn.textContent = letter;
     btn.onclick = () => {
       if (letter === correctLetter) {
-        document.getElementById(
-          "spelling-feedback"
-        ).textContent = `🕸️ Correct! ${targetWord}`;
+        document.getElementById("spelling-feedback").textContent = `🕸️ Correct! ${targetWord}`;
         playCorrect();
+        webShoot();
       } else {
-        document.getElementById("spelling-feedback").textContent =
-          "😈 Venom got you!";
+        document.getElementById("spelling-feedback").textContent = "😈 Venom got you!";
         playWrong();
+        venomAttack();
       }
     };
     buttonContainer.appendChild(btn);
@@ -192,7 +188,7 @@ function startSpellingBuilder(container) {
 function startMathBattle(container) {
   container.innerHTML = `
     <h2>🔢 Math Battle</h2>
-    <p>Solve the problem before the monster eats Spider-Man!</p>
+    <p>Solve the problem before Venom eats Spider-Man!</p>
     <div id="math-problem"></div>
     <div id="math-buttons"></div>
     <p id="math-feedback"></p>
@@ -200,16 +196,13 @@ function startMathBattle(container) {
       <img id="math-spidey" src="images/spiderman.png?v=${VERSION}" alt="Spider-Man" />
       <img id="math-monster" src="images/venom.png?v=${VERSION}" alt="Venom" />
     </div>
-    <button onclick="startMathBattle(document.getElementById('game-area'))">🔄 New Problem</button>
   `;
 
   const a = Math.floor(Math.random() * 10);
   const b = Math.floor(Math.random() * 10);
   const answer = a + b;
 
-  document.getElementById(
-    "math-problem"
-  ).innerHTML = `<strong>${a} + ${b} = ?</strong>`;
+  document.getElementById("math-problem").innerHTML = `<strong>${a} + ${b} = ?</strong>`;
 
   const pool = [answer];
   while (pool.length < 4) {
@@ -224,18 +217,13 @@ function startMathBattle(container) {
     btn.textContent = num;
     btn.onclick = () => {
       if (num === answer) {
-        document.getElementById("math-feedback").textContent =
-          "🕸️ Spider-Man wins!";
-        document.getElementById("math-spidey").style.filter = "none";
-        document.getElementById("math-monster").style.display = "none";
+        document.getElementById("math-feedback").textContent = "🕸️ Spider-Man wins!";
         playCorrect();
+        webShoot();
       } else {
-        document.getElementById("math-feedback").textContent =
-          "😈 The monster ate Spider-Man!";
-        document.getElementById("math-spidey").style.filter =
-          "grayscale(100%)";
+        document.getElementById("math-feedback").textContent = "😈 Venom got you!";
         playWrong();
-        venomAttack(); // 🔥 trigger Venom attack animation
+        venomAttack();
       }
     };
     buttonContainer.appendChild(btn);
