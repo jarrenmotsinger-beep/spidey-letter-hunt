@@ -24,10 +24,11 @@ function returnToHub() {
 }
 
 /* ===========================
-   SOUND EFFECTS
+   SOUND EFFECTS (with versioning)
 =========================== */
-const soundCorrect = new Audio("sounds/Correct.mp3");
-const soundWrong = new Audio("sounds/Incorrect.mp3");
+const VERSION = 2; // 🔹 bump this number whenever you replace mp3 files
+const soundCorrect = new Audio(`sounds/Correct.mp3?v=${VERSION}`);
+const soundWrong = new Audio(`sounds/Incorrect.mp3?v=${VERSION}`);
 
 function playCorrect() {
   soundCorrect.currentTime = 0;
