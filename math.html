@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Math Battle</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game-container">
+    <h2>🔢 Math Battle</h2>
+    <p>Solve the problem before Venom eats Spider-Man!</p>
+
+    <div id="problem"></div>
+    <div id="answers"></div>
+    <p id="feedback" class="feedback"></p>
+    <div id="result-img"></div>
+
+    <button onclick="newProblem()">🔄 New Problem</button>
+    <a href="index.html" class="hub-btn">⬅️ Back to Hub</a>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    let correctAnswer = 0;
+    const problemDiv = document.getElementById("problem");
+    const answersDiv = document.getElementById("answers");
+    const feedback = document.getElementById("feedback");
+    const resultImg = document.getElementById("result-img");
+
+    function newProblem() {
+      feedback.textContent = "";
+      resultImg.innerHTML = "";
+
+      const a = Math.floor(Math.random() * 10);
+      const b = Math.floor(Math.random() * 10);
+      correctAnswer = a + b;
+      problemDiv.textContent = `${a} + ${b} = ?`;
+
+      const answers = new Set([correctAnswer]);
+      while (answers.size < 4) answers.add(Math.floor(Math.random() * 20));
+
+      answersDiv.innerHTML = "";
+      Array.from(answers).sort(() => Math.random() - 0.5).forEach(num => {
+        const btn = document.createElement("button");
+        btn.textContent = num;
+        btn.className = "answer-btn";
+        btn.onclick = () => checkAnswer(num);
+        answersDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected) {
+      if (selected === correctAnswer) {
+        feedback.textContent = "🕷️ Spider-Man wins!";
+        feedback.style.color = "lime";
+        handleCorrectAnswer();
+        resultImg.innerHTML = `<img src="images/spiderman.png" class="character-img">`;
+      } else {
+        feedback.textContent = "💀 Venom attacks!";
+        feedback.style.color = "red";
+        handleIncorrectAnswer();
+        showVenom(resultImg);
+      }
+    }
+
+    newProblem();
+  </script>
+</body>
+</html>
