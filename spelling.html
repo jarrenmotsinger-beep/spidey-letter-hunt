@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spelling Builder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game-container">
+    <h2>✏️ Spelling Builder</h2>
+    <p>Fill in the missing letter!</p>
+
+    <div id="word"></div>
+    <div id="letters"></div>
+    <p id="feedback" class="feedback"></p>
+    <div id="result-img"></div>
+
+    <button onclick="newWord()">🔄 New Word</button>
+    <a href="index.html" class="hub-btn">⬅️ Back to Hub</a>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    let correctWord = "";
+    let missingLetter = "";
+    const words = ["SPIDER", "VENOM", "MASK", "CITY"];
+    const feedback = document.getElementById("feedback");
+    const resultImg = document.getElementById("result-img");
+
+    function newWord() {
+      feedback.textContent = "";
+      resultImg.innerHTML = "";
+
+      correctWord = words[Math.floor(Math.random() * words.length)];
+      const idx = Math.floor(Math.random() * correctWord.length);
+      missingLetter = correctWord[idx];
+
+      const display = correctWord.split("");
+      display[idx] = "_";
+      document.getElementById("word").textContent = display.join(" ");
+
+      const pool = new Set([missingLetter]);
+      while (pool.size < 5) pool.add(String.fromCharCode(65 + Math.floor(Math.random() * 26)));
+
+      const lettersDiv = document.getElementById("letters");
+      lettersDiv.innerHTML = "";
+      Array.from(pool).sort(() => Math.random() - 0.5).forEach(letter => {
+        const btn = document.createElement("button");
+        btn.textContent = letter;
+        btn.className = "answer-btn";
+        btn.onclick = () => checkAnswer(letter);
+        lettersDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected) {
+      if (selected === missingLetter) {
+        feedback.textContent = `🕸️ Correct! ${correctWord}`;
+        feedback.style.color = "lime";
+        handleCorrectAnswer();
+        resultImg.innerHTML = `<img src="images/spiderman.png" class="character-img">`;
+      } else {
+        feedback.textContent = "💀 Venom strikes!";
+        feedback.style.color = "red";
+        handleIncorrectAnswer();
+        showVenom(resultImg);
+      }
+    }
+
+    newWord();
+  </script>
+</body>
+</html>
